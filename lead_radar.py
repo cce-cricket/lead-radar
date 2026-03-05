@@ -1,42 +1,27 @@
 import requests
+from bs4 import BeautifulSoup
 
-KEYWORDS = [
-    "startup",
-    "saas",
-    "launch",
-    "founder",
-    "mvp",
-    "product",
-    "growth",
-    "customers",
-    "build",
-]
+def get_indiehackers_posts():
 
-def get_hackernews_posts():
+    print("\nIndie Hackers Posts\n")
 
-    print("Startup-related Hacker News Posts\n")
+    url = "https://www.indiehackers.com/"
 
-    url = "https://hacker-news.firebaseio.com/v0/newstories.json"
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
 
-    r = requests.get(url)
-    story_ids = r.json()[:30]
+    r = requests.get(url, headers=headers)
 
-    for sid in story_ids:
+    soup = BeautifulSoup(r.text, "html.parser")
 
-        story = requests.get(
-            f"https://hacker-news.firebaseio.com/v0/item/{sid}.json"
-        ).json()
+    posts = soup.find_all("a", class_="feed-item__title-link")
 
-        title = story.get("title", "").lower()
+    for post in posts[:10]:
 
-        if any(k in title for k in KEYWORDS):
+        title = post.text.strip()
+        link = "https://www.indiehackers.com" + post["href"]
 
-            print(story["title"])
-
-            if story.get("url"):
-                print(story["url"])
-
-            print("---")
-
-
-get_hackernews_posts()
+        print(title)
+        print(link)
+        print("---")
