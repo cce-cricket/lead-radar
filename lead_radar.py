@@ -1,13 +1,25 @@
 import requests
 
+KEYWORDS = [
+    "startup",
+    "saas",
+    "launch",
+    "founder",
+    "mvp",
+    "product",
+    "growth",
+    "customers",
+    "build",
+]
+
 def get_hackernews_posts():
 
-    print("Hacker News Posts\n")
+    print("Startup-related Hacker News Posts\n")
 
-    url = "https://hacker-news.firebaseio.com/v0/topstories.json"
+    url = "https://hacker-news.firebaseio.com/v0/newstories.json"
 
     r = requests.get(url)
-    story_ids = r.json()[:10]
+    story_ids = r.json()[:30]
 
     for sid in story_ids:
 
@@ -15,7 +27,9 @@ def get_hackernews_posts():
             f"https://hacker-news.firebaseio.com/v0/item/{sid}.json"
         ).json()
 
-        if story.get("title"):
+        title = story.get("title", "").lower()
+
+        if any(k in title for k in KEYWORDS):
 
             print(story["title"])
 
@@ -23,15 +37,6 @@ def get_hackernews_posts():
                 print(story["url"])
 
             print("---")
-
-
-def get_producthunt_posts():
-
-    print("\nProduct Hunt Launches\n")
-
-    url = "https://api.producthunt.com/v2/api/graphql"
-
-    print("Product Hunt scraping requires API, skipping for now.")
 
 
 get_hackernews_posts()
