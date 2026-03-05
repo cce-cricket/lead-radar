@@ -1,29 +1,37 @@
 import requests
 
-def get_reddit_posts():
+def get_hackernews_posts():
 
-    url = "https://www.reddit.com/r/startups.json?limit=10"
+    print("Hacker News Posts\n")
 
-    headers = {
-        "User-Agent": "LeadRadarBot/1.0"
-    }
+    url = "https://hacker-news.firebaseio.com/v0/topstories.json"
 
-    r = requests.get(url, headers=headers)
+    r = requests.get(url)
+    story_ids = r.json()[:10]
 
-    if r.status_code != 200:
-        print("Request failed:", r.status_code)
-        return
+    for sid in story_ids:
 
-    data = r.json()
+        story = requests.get(
+            f"https://hacker-news.firebaseio.com/v0/item/{sid}.json"
+        ).json()
 
-    for post in data["data"]["children"]:
+        if story.get("title"):
 
-        title = post["data"]["title"]
-        link = "https://reddit.com" + post["data"]["permalink"]
+            print(story["title"])
 
-        print(title)
-        print(link)
-        print("---")
+            if story.get("url"):
+                print(story["url"])
+
+            print("---")
 
 
-get_reddit_posts()
+def get_producthunt_posts():
+
+    print("\nProduct Hunt Launches\n")
+
+    url = "https://api.producthunt.com/v2/api/graphql"
+
+    print("Product Hunt scraping requires API, skipping for now.")
+
+
+get_hackernews_posts()
